@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use(logger(function (tokens, req, res) {
     return [
         Date(),
-        Headers['Authorization'] ? '[WA]' : '[WOA]',
+        Headers['Authorization'] ? '[WA]' : '[WOA] ',
         tokens.method(req, res),
         tokens.url(req, res),
         tokens.status(req, res),
