@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
 
-let AccessKeySchema = mongoose.Schema({
-    key: {
+let ArtScheme = mongoose.Schema({
+    userid: {
+        type: String,
+        default: ''
+    },
+    artid: {
+        type: String,
+        default: ''
+    },
+    description: {
         type: String,
         default: ''
     },
@@ -27,4 +35,4 @@ let AccessKeySchema = mongoose.Schema({
     }
 });
 
-var AccessKey = module.exports = mongoose.model('AccessKey', AccessKeySchema);
+var Art = module.exports = mongoose.model('Art', ArtScheme);

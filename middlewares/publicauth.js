@@ -26,7 +26,7 @@ async function authenticatePublic(req, res, next) {
         });
     }
 
-    jwt.verify(thisToken, process.env.TOKEN_SECRET || 'ADB!MSM-AAP-31052023-SDB-TP', (err, user) => {
+    jwt.verify(token, process.env.TOKEN_SECRET || 'ADB!MSM-AAP-31052023-SDB-TP', (err, user) => {
         if (err) {
             console.log(err)
             return res.status(403).json({
@@ -34,7 +34,6 @@ async function authenticatePublic(req, res, next) {
                 message: "Not authorized."
             });
         }
-        console.log(user);
         req.sessionUser = user
 
         next()

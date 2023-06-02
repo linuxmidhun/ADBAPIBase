@@ -21,7 +21,19 @@ let UserSchema = mongoose.Schema({
     },
     authtoken: {
         type: String,
-        default: ''
+        default: null
+    },
+    lastsession: {
+        type: Date,
+        default: null
+    },
+    lastsessionend: {
+        type: Date,
+        default: null
+    },
+    currentsession: {
+        type: Date,
+        default: null
     },
     createdat: {
         type: Date,
@@ -31,11 +43,11 @@ let UserSchema = mongoose.Schema({
         type: String,
         default: 'Self'
     },
-    updatedat: {
+    modifiedat: {
         type: Date,
         default: null
     },
-    updatedby: {
+    modifiedby: {
         type: String,
         default: 'Self'
     }

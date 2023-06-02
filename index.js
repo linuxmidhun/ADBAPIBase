@@ -7,6 +7,7 @@ const logger = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
 const auth = require('./controllers/authcontroller');
+const art = require('./controllers/artcontroller');
 const { ValidationError } = require('express-validation');
 const reqverify = require('./middlewares/requestverify');
 
@@ -47,6 +48,7 @@ app.get('/ping', reqverify, (_, res) => {
 });
 
 app.use('/auth', auth);
+app.use('/art', art);
 app.use(function (err, req, res, next) {
     if (err instanceof ValidationError) {
         return res.status(err.statusCode).json({
