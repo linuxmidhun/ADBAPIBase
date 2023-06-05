@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Art = require('../models/art.model');
-const auth = require('../middlewares/publicauth');
-const reqverify = require('../middlewares/requestverify');
+const auth = require('../middlewares/publicauth.middleware');
+const verifyRequest = require('../middlewares/requestverify.middleware');
 const { validate, Joi } = require('express-validation');
 
 const artValidation = {
@@ -12,7 +12,7 @@ const artValidation = {
     }),
 };
 
-router.post('', auth, validate(artValidation, {}, {}), async (req, res) => {
+router.post('', verifyRequest, auth, validate(artValidation, {}, {}), async (req, res) => {
     let request = req.body;
     let art = await Art.findOne({ artname: request.artname });
     if (!art) {
@@ -41,7 +41,7 @@ router.post('', auth, validate(artValidation, {}, {}), async (req, res) => {
     }
 });
 
-router.put('/:id', auth, validate(artValidation, {}, {}), async (req, res) => {
+router.put('/:id', verifyRequest, auth, validate(artValidation, {}, {}), async (req, res) => {
     let id = req.params.id;
     let request = req.body;
     var art = await Art.findById(id).catch(err => {
@@ -75,7 +75,7 @@ router.put('/:id', auth, validate(artValidation, {}, {}), async (req, res) => {
     }
 });
 
-router.get('', reqverify, auth, async (req, res) => {
+router.get('', verifyRequest, auth, async (req, res) => {
     var arts = await Art.find({ active: true }).catch(err => {
         console.log(err);
         res.status(500).json({
@@ -90,7 +90,7 @@ router.get('', reqverify, auth, async (req, res) => {
     });
 });
 
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', verifyRequest, auth, async (req, res) => {
     let id = req.params.id;
     var art = await Art.findById(id).catch(err => {
         console.log(err);
@@ -111,7 +111,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 /// Here we are doing only a soft delete on the course collection.
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', verifyRequest, auth, async (req, res) => {
     let id = req.params.id;
     await Art.findByIdAndUpdate(id, {
         active: false,

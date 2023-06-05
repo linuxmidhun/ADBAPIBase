@@ -3,8 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 var User = require('../models/user.model');
-const auth = require('../middlewares/publicauth');
-const reqverify = require('../middlewares/requestverify');
+const auth = require('../middlewares/publicauth.middleware');
+const reqverify = require('../middlewares/requestverify.middleware');
 const { validate, Joi } = require('express-validation');
 
 const loginValidation = {

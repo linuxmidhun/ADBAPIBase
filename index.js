@@ -6,10 +6,11 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
-const auth = require('./controllers/authcontroller');
-const art = require('./controllers/artcontroller');
+const db = require("./config/database.config");
+const auth = require('./controllers/auth.controller');
+const art = require('./controllers/art.controller');
 const { ValidationError } = require('express-validation');
-const reqverify = require('./middlewares/requestverify');
+const reqverify = require('./middlewares/requestverify.middleware');
 
 const app = express();
 app.use(cors());
@@ -67,5 +68,5 @@ var PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
     console.log(`Bonjour ingénieur... Le serveur s'exécute sur le port ${PORT}`);
-    require("./config/database").connect();
+    db.connect();
 });

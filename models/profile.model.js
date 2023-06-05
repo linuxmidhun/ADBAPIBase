@@ -5,8 +5,8 @@ let ArtScheme = mongoose.Schema({
         type: String,
         default: ''
     },
-    artid: {
-        type: String,
+    artids: {
+        type: Array,
         default: ''
     },
     description: {
