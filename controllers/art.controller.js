@@ -1,134 +1,95 @@
 const express = require('express');
 const router = express.Router();
 const Art = require('../models/art.model');
-const auth = require('../middlewares/publicauth.middleware');
-const verifyRequest = require('../middlewares/requestverify.middleware');
+// const auth = require('../middlewares/publicauth.middleware');
 const { validate, Joi } = require('express-validation');
 
 const artValidation = {
     body: Joi.object({
-        art: Joi.string()
+        artname: Joi.string()
             .required()
     }),
 };
 
-router.post('', verifyRequest, auth, validate(artValidation, {}, {}), async (req, res) => {
+router.post('', validate(artValidation, {}, {}), async (req, res) => {
     let request = req.body;
     let art = await Art.findOne({ artname: request.artname });
     if (!art) {
-        var newArt = new art({
+        var newArt = new Art({
             artname: request.artname,
+            active: true,
             createdat: Date.now(),
             createdby: req.sessionUser.username
         });
-        newArt.save().then(_ => {
-            res.status(200).json({
-                status: 200,
-                message: "Art created successfully."
+        newArt.save()
+            .then(_ => { res.Success("Art created successfully."); })
+            .catch(err => {
+                console.log(err);
+                res.Error("Error creating art.");
             });
-        }).catch(err => {
-            console.log(err);
-            res.status(400).json({
-                status: 400,
-                message: "Error creating art."
-            });
-        });
     } else {
-        res.status(409).json({
-            status: 409,
-            message: "The art already exists."
-        });
+        res.Exists("The art already exists.");
     }
 });
 
-router.put('/:id', verifyRequest, auth, validate(artValidation, {}, {}), async (req, res) => {
+router.put('/:id', validate(artValidation, {}, {}), async (req, res) => {
     let id = req.params.id;
     let request = req.body;
-    var art = await Art.findById(id).catch(err => {
-        console.log(err);
-        res.status(500).json({
-            status: 500,
-            message: "Error finding art."
+    var art = await Art.findById(id)
+        .catch(err => {
+            console.log(err);
+            res.Exception("Error finding art.");
         });
-    });
-    if (!art) res.status(404).json({
-        status: 404,
-        message: "Art not found"
-    });
+    if (!art) res.NotFound("Art not found");
     else {
         await Art.findByIdAndUpdate(id, {
             artname: request.artname,
             updatedat: Date.now(),
             updatedby: req.sessionUser.username
-        }).then(_ => {
-            res.status(200).json({
-                status: 200,
-                message: "Art updated successfully."
+        })
+            .then(_ => { res.Success("Art updated successfully."); })
+            .catch(err => {
+                console.log(err);
+                res.Exception("Error updating art details.");
             });
-        }).catch(err => {
-            console.log(err);
-            res.status(500).json({
-                status: 500,
-                message: "Error updating art details."
-            });
-        });
     }
 });
 
-router.get('', verifyRequest, auth, async (req, res) => {
-    var arts = await Art.find({ active: true }).catch(err => {
-        console.log(err);
-        res.status(500).json({
-            status: 500,
-            message: "Error fetching list of arts."
+router.get('', async (req, res) => {
+    var arts = await Art.find({ active: true })
+        .catch(err => {
+            console.log(err);
+            res.Exception("Error fetching list of arts.");
         });
-    });
-    res.status(200).json({
-        status: 200,
-        message: "Success",
-        data: arts
-    });
+    res.Success("Arts found", arts);
 });
 
-router.get('/:id', verifyRequest, auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
     let id = req.params.id;
-    var art = await Art.findById(id).catch(err => {
-        console.log(err);
-        res.status(500).json({
-            status: 500,
-            message: "Error finding art."
+    var art = await Art.findById(id)
+        .catch(err => {
+            console.log(err);
+            res.Exception("Error finding art.");
         });
-    });
-    if (!art) res.status(404).json({
-        status: 404,
-        message: "Art not found"
-    });
-    else res.status(200).json({
-        status: 200,
-        message: "Art found",
-        data: art
-    });
+    if (!art)
+        res.NotFound("Art not found");
+    else
+        res.Success("Art found", art);
 });
 
 /// Here we are doing only a soft delete on the course collection.
-router.delete('/:id', verifyRequest, auth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     let id = req.params.id;
     await Art.findByIdAndUpdate(id, {
         active: false,
         updatedat: Date.now(),
         updatedby: req.sessionUser.username
-    }).then(_ => {
-        res.status(200).json({
-            status: 200,
-            message: "Deleted Art successfully."
+    })
+        .then(_ => { res.Success("Deleted Art successfully."); })
+        .catch(err => {
+            console.log(err);
+            res.Exception("Error deleting Art.");
         });
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({
-            status: 500,
-            message: "Error deleting Art."
-        });
-    });
 });
 
 module.exports = router;

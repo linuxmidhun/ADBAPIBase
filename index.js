@@ -4,13 +4,16 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const session = require('express-session');
-const passport = require('passport');
-const db = require("./config/database.config");
-const auth = require('./controllers/auth.controller');
-const art = require('./controllers/art.controller');
+// const eSession = require('express-session');
 const { ValidationError } = require('express-validation');
-const reqverify = require('./middlewares/requestverify.middleware');
+// const passport = require('passport');
+const db = require("./config/database.config");
+const authController = require('./controllers/auth.controller');
+const artController = require('./controllers/art.controller');
+const sessionController = require('./controllers/session.controller');
+var auth = require('./middlewares/publicauth.middleware');
+var Response = require('./middlewares/response.middleware');
+var verifyRequest = require('./middlewares/requestverify.middleware');
 
 const app = express();
 app.use(cors());
@@ -29,27 +32,30 @@ app.use(logger(function (tokens, req, res) {
     ].join(' ')
 }));
 
-//express session
-app.use(session({
-    secret: 'secret',
-    saveUninitialized: true,
-    resave: true
-}));
+// //express session
+// app.use(eSession({
+//     secret: 'secret',
+//     saveUninitialized: true,
+//     resave: true
+// }));
 
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
+app.use(Response);
+app.use(verifyRequest);
 
-app.get('/ping', reqverify, (_, res) => {
+app.get('/ping', (_, res) => {
     console.log('Someone checked our hartbeat, and what? Our heart is beating in the perfect order.');
-    res.status(200).json({
-        status: 200,
-        message: "Pong! Thanks for checking our status. Our heart is beating perfectly."
-    });
+    res.Success("Pong! Thanks for checking our status. Our heart is beating perfectly.");
 });
 
-app.use('/auth', auth);
-app.use('/art', art);
+app.use('/auth', authController);
+app.use('/art', auth, artController);
+app.use('/session', auth, sessionController)
+/*
+// Validation Error middleware.
+*/
 app.use(function (err, req, res, next) {
     if (err instanceof ValidationError) {
         return res.status(err.statusCode).json({
@@ -57,11 +63,7 @@ app.use(function (err, req, res, next) {
             message: err.message
         });
     }
-    return res.status(500).json({
-        status: 500,
-        message: "Wrong request",
-        data: err
-    });
+    return res.Exception("Wrong request", err);
 });
 
 var PORT = process.env.PORT || 4000;
