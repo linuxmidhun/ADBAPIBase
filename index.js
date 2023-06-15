@@ -4,9 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-// const eSession = require('express-session');
 const { ValidationError } = require('express-validation');
-// const passport = require('passport');
 const db = require("./config/database.config");
 const authController = require('./controllers/auth.controller');
 const artController = require('./controllers/art.controller');
@@ -32,16 +30,6 @@ app.use(logger(function (tokens, req, res) {
     ].join(' ')
 }));
 
-// //express session
-// app.use(eSession({
-//     secret: 'secret',
-//     saveUninitialized: true,
-//     resave: true
-// }));
-
-
-// app.use(passport.initialize());
-// app.use(passport.session());
 app.use(Response);
 app.use(verifyRequest);
 
